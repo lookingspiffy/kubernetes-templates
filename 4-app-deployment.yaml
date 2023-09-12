@@ -1,0 +1,141 @@
+---
+# App detail
+apiVersion: apps/v1
+# Kind can vary. StatefulSet is used for apps that require stable network IDs, storage, etc.
+kind: StatefulSet
+metadata:
+  labels:
+    # Labels can be whatever you want. The below is the same as setting "app = my-app"
+    app: my-app
+  name: my-app
+  namespace: my-namespace
+spec:
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+  # This is the service that goes with the app. You will create it in this YAML, too.
+  serviceName: my-service
+  replicas: 1
+  selector: 
+    # matchLabels ensures that any app with the label "app: my-app" is managed under the umbrella of this StatefulSet.
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app
+          # For the version you can use a specific version, if required, or 'latest'
+          image: user/imagename:version
+          imagePullPolicy: Always
+          # Below is where you can set environment variables. Many applications will require specific env values to be configured.
+          env:
+            # UID of user accessing volume claim
+            - name: PUID
+              value: "1234"
+            # GID of user accessing volume claim
+            - name: PGID
+              value: "123"
+            # Time zone where applicable
+            - name: TZ
+              value: America/Los_Angeles
+          ports:
+            # The port names help with routing. You can name it anything you want, but consistency is key.
+            - name: http
+              containerPort: 80
+          volumeMounts:
+          # mountPath is where you will mount it in the container. If the container stores data in "/etc/data", you can set "/etc/data" to use an external mount this way.
+          - mountPath: /app/data
+            name: my-app-data
+      volumes:
+        # This is where you can use the volumeMount from above and target an external storage location.
+        - name: my-app-data
+          persistentVolumeClaim:
+            claimName: my-app-data
+---
+# App service detail - This is also required for ingress
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+  namespace: my-namespace
+spec:
+  # ipFamilyPolicy allows SingleStack or DualStack. If you will not use IPv6, stay with SingleStack
+  ipFamilyPolicy: SingleStack
+  selector:
+    app: my-app
+  ports:
+    - name: http
+      port: 80
+      # The targetPort will use the name of the port you indicated in the StatefulSet.
+      targetPort: http
+---
+# App example - myfirstapp
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: myfistapp
+  name: myfirstapp
+  namespace: apps
+spec:
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+  serviceName: myfirstapp
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: myfirstapp
+  template:
+    metadata:
+      labels:
+        app: myfirstapp
+    spec:
+      containers:
+        - name: myfirstapp
+          image: user/appimage:latest
+          imagePullPolicy: Always
+          env:
+            - name: PUID
+              value: "1234"
+            - name: PGID
+              value: "123"
+            - name: TZ
+              value: America/Los_Angeles
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+          - mountPath: /etc/data
+            name: myfirstapp-data
+      volumes:
+        - name: myfirstapp-data
+          persistentVolumeClaim:
+            claimName: myfirstapp-data
+---
+# Service example for "myfirstapp" application
+apiVersion: v1
+kind: Service
+metadata:
+  name: myfirstapp
+  labels:
+    app: myfirstapp
+  namespace: apps
+spec:
+  ipFamilyPolicy: SingleStack
+  selector:
+    app: myfirstapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
