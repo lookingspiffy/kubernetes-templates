@@ -1,11 +1,13 @@
 ---
+# Namespace details
 apiVersion: v1
 kind: Namespace
 metadata:
   name: my-namespace
 ---
+# Namespace example
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: my-second-namespace
+  name: apps
 ---
