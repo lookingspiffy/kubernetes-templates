@@ -23,7 +23,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-bigstorage-apps-myfirstapp-config
+  name: nfs-bigstorage-apps-myfirstapp-data
 spec:
   capacity:
     storage: 10Gi
