@@ -1,0 +1,40 @@
+---
+# Storage detail space with placeholder path and server
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storagetype-server-namespace-app-context
+spec:
+  capacity:
+    storage: 1Ti
+  mountOptions:
+  - nolock
+  - vers=3
+  accessModes:
+  - ReadWriteOnce
+  - ReadOnlyMany
+  - ReadWriteMany
+  nfs:
+    path: /serverDirectory/storageDirectory
+    server: 10.0.0.2
+  persistentVolumeReclaimPolicy: Retain
+---
+# Storage detail space example
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-bigstorage-apps-myfirstapp-config
+spec:
+  capacity:
+    storage: 10Gi
+  mountOptions:
+  - nolock
+  - vers=3
+  accessModes:
+  - ReadWriteOnce
+  - ReadOnlyMany
+  - ReadWriteMany
+  nfs:
+    path: /kubernetes/myfirstapp/config
+    server: 10.0.0.3
+  persistentVolumeReclaimPolicy: Retain
