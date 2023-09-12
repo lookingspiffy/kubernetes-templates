@@ -1,0 +1,37 @@
+---
+# Claim details
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: app-context
+ namespace: my-namespace
+spec:
+  accessModes:
+  - ReadWriteOnce
+  - ReadOnlyMany
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Ti
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: name-of-persistent-storage
+  ---
+# Claim example
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: myfirstapp-data
+ namespace: apps
+spec:
+  accessModes:
+  - ReadWriteOnce
+  - ReadOnlyMany
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: nfs-bigstorage-apps-myfirstapp-config
+  ---
