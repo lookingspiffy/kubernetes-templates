@@ -1,0 +1,39 @@
+---
+# Ingress details
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: "my-namespace"
+  name: "my-namespace-ingress"
+spec:
+  rules:
+  - host: "dns.entry"
+    http:
+      paths:
+        - pathType: Prefix
+          backend:
+            service:
+              name: "backend-service-name"
+              port:
+                number: 80
+          path: "/"
+---
+# Ingress example - Routing traffic intended for "myfirstapp.home.dns" to the "myfirstapp" service on port 80
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: "apps"
+  name: "myfirstapp-ingress"
+spec:
+  rules:
+  - host: "myfirstapp.home.dns"
+    http:
+      paths:
+        - pathType: Prefix
+          backend:
+            service:
+              name: "myfirstapp"
+              port:
+                number: 80
+          path: "/"
+---
